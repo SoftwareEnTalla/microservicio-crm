@@ -54,6 +54,7 @@ import { GetTermsAndConditionByIdHandler } from "../queries/handlers/gettermsand
 import { GetTermsAndConditionByFieldHandler } from "../queries/handlers/gettermsandconditionbyfield.handler";
 import { GetAllTermsAndConditionHandler } from "../queries/handlers/getalltermsandcondition.handler";
 import { TermsAndConditionCrudSaga } from "../sagas/termsandcondition-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors

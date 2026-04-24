@@ -25,6 +25,7 @@
 | |____services
 | |____tda
 |____database
+|____docs
 |____errors
 |____filters
 |____i18n
