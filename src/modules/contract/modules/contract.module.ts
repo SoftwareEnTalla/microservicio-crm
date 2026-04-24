@@ -54,6 +54,7 @@ import { GetContractByIdHandler } from "../queries/handlers/getcontractbyid.hand
 import { GetContractByFieldHandler } from "../queries/handlers/getcontractbyfield.handler";
 import { GetAllContractHandler } from "../queries/handlers/getallcontract.handler";
 import { ContractCrudSaga } from "../sagas/contract-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
