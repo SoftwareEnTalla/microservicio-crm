@@ -54,6 +54,7 @@ import { GetCatalogSyncLogByIdHandler } from "../queries/handlers/getcatalogsync
 import { GetCatalogSyncLogByFieldHandler } from "../queries/handlers/getcatalogsynclogbyfield.handler";
 import { GetAllCatalogSyncLogHandler } from "../queries/handlers/getallcatalogsynclog.handler";
 import { CatalogSyncLogCrudSaga } from "../sagas/catalogsynclog-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
