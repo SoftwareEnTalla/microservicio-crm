@@ -40,9 +40,17 @@
  */
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { Repository, IsNull, LessThan, In } from 'typeorm';
 import { Provider } from '../entities/provider.entity';
 import { ProviderUpstreamClientService } from './provider-upstream-client.service';
+import { KafkaService } from '../shared/messaging/kafka.service';
+
+/**
+ * Topic Kafka del comando cross-context register-<upstream>-from-<downstream>.
+ * El upstream service debe suscribirse a este topic y reaccionar creando/ligando
+ * la entidad upstream correspondiente.
+ */
+const REGISTER_UPSTREAM_COMMAND_TOPIC = 'register-person-from-provider-command';
 
 @Injectable()
 export class ProviderUpstreamReconcilerService
@@ -57,6 +65,7 @@ export class ProviderUpstreamReconcilerService
     @InjectRepository(Provider)
     private readonly repository: Repository<Provider>,
     private readonly upstreamClient: ProviderUpstreamClientService,
+    private readonly kafkaService: KafkaService,
   ) {}
 
   private get intervalMs(): number {
@@ -96,7 +105,7 @@ export class ProviderUpstreamReconcilerService
       return;
     }
 
-    // Flujo 1: empujar LOCAL_ONLY sin FK hacia upstream
+    // Flujo 1: empujar LOCAL_ONLY sin FK hacia upstream (dispara comando Kafka)
     const pending = await this.repository.find({
       where: [
         { upstreamSyncStatus: 'LOCAL_ONLY' as any, personId: IsNull() } as any,
@@ -109,18 +118,65 @@ export class ProviderUpstreamReconcilerService
         (record as any).upstreamSyncStatus = 'PENDING_UPSTREAM';
         (record as any).upstreamLastAttemptAt = new Date();
         await this.repository.save(record);
-        // NOTA: la publicación Kafka del comando register-person-from-provider
-        // se gestiona desde el command handler estándar; aquí sólo marcamos PENDING.
+        // Publicamos comando Kafka para que el upstream cree/ligue la entidad.
+        await this.kafkaService.sendMessage(REGISTER_UPSTREAM_COMMAND_TOPIC, {
+          aggregateId: (record as any).id,
+          sourceBoundedContext: 'crm',
+          sourceAggregate: 'provider',
+          targetBoundedContext: 'hrms',
+          targetAggregate: 'person',
+          payload: record,
+          emittedAt: new Date().toISOString(),
+        }, { key: (record as any).id });
       } catch (err) {
         (record as any).upstreamLastErrorAt = new Date();
         await this.repository.save(record);
         this.logger.warn(
-          `Fallo empujando provider ${(record as any).id} al upstream`,
+          `Fallo empujando provider ${(record as any).id} al upstream: ${(err as Error)?.message || err}`,
         );
       }
     }
 
-    // Flujo 2: refrescar SYNCED cuya antigüedad supere el intervalo
-    // (implementación completa depende del endpoint upstream concreto; se deja placeholder)
+    // Flujo 2: refrescar SYNCED cuya última sincronización sea anterior al TTL
+    const ttlCutoff = new Date(Date.now() - this.intervalMs);
+    const stale = await this.repository.find({
+      where: {
+        upstreamSyncStatus: 'SYNCED' as any,
+        upstreamSyncedAt: LessThan(ttlCutoff),
+      } as any,
+      take: 50,
+    });
+    if (stale.length === 0) return;
+    const ids = stale
+      .map((r) => (r as any).personId)
+      .filter((v) => v !== null && v !== undefined);
+    if (ids.length === 0) return;
+    try {
+      const qs = new URLSearchParams();
+      for (const id of ids) qs.append('ids', String(id));
+      const relative = '/persons/query/batch-by-ids?' + qs.toString();
+      const batch = await this.upstreamClient.fetchUpstream<any>(relative);
+      const snapshots: any[] = (batch as any)?.data ?? (batch as any) ?? [];
+      const snapshotsById = new Map<string, any>(
+        snapshots.map((s: any) => [String(s.id ?? s.personId), s]),
+      );
+      for (const record of stale) {
+        const upstreamId = String((record as any).personId);
+        const snap = snapshotsById.get(upstreamId);
+        if (!snap) continue;
+        // Aplica patch mirror: la saga ya maneja Created/Updated,
+        // aquí sólo marcamos re-sincronización manual.
+        (record as any).upstreamSyncedAt = new Date();
+        (record as any).upstreamLastAttemptAt = new Date();
+        await this.repository.save(record);
+      }
+      this.logger.log(
+        `Flujo 2: refrescados ${snapshotsById.size}/${stale.length} registros SYNCED stale`,
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Flujo 2 falló consultando batch-by-ids: ${(err as Error)?.message || err}`,
+      );
+    }
   }
 }

@@ -37,15 +37,18 @@
  * Algoritmo: pg_trgm+tsvector (delegado al upstream service).
  * Campos indexados: name,taxId,firstName,lastName,documentNumber,email,phone
  */
-import { Controller, Get, Query, HttpStatus, Res } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Query, HttpStatus, Res, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { ProviderUpstreamClientService } from '../services/provider-upstream-client.service';
+import { ProviderAuthGuard } from '../guards/providerauthguard.guard';
 
 const SIMILARITY_FIELDS: string[] = ['name', 'taxId', 'firstName', 'lastName', 'documentNumber', 'email', 'phone'];
 const DEFAULT_MAX = 20;
 
 @ApiTags('provider')
+@ApiBearerAuth()
+@UseGuards(ProviderAuthGuard)
 @Controller('providers')
 export class ProviderUpstreamSearchController {
   constructor(private readonly upstreamClient: ProviderUpstreamClientService) {}
