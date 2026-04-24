@@ -54,6 +54,7 @@ import { GetContractStatusLogByIdHandler } from "../queries/handlers/getcontract
 import { GetContractStatusLogByFieldHandler } from "../queries/handlers/getcontractstatuslogbyfield.handler";
 import { GetAllContractStatusLogHandler } from "../queries/handlers/getallcontractstatuslog.handler";
 import { ContractStatusLogCrudSaga } from "../sagas/contractstatuslog-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
