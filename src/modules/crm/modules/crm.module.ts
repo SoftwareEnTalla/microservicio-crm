@@ -54,6 +54,7 @@ import { GetCrmByIdHandler } from "../queries/handlers/getcrmbyid.handler";
 import { GetCrmByFieldHandler } from "../queries/handlers/getcrmbyfield.handler";
 import { GetAllCrmHandler } from "../queries/handlers/getallcrm.handler";
 import { CrmCrudSaga } from "../sagas/crm-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
