@@ -54,6 +54,7 @@ import { GetIncentiveByIdHandler } from "../queries/handlers/getincentivebyid.ha
 import { GetIncentiveByFieldHandler } from "../queries/handlers/getincentivebyfield.handler";
 import { GetAllIncentiveHandler } from "../queries/handlers/getallincentive.handler";
 import { IncentiveCrudSaga } from "../sagas/incentive-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
