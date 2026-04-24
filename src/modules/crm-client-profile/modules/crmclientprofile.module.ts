@@ -54,6 +54,7 @@ import { GetCrmClientProfileByIdHandler } from "../queries/handlers/getcrmclient
 import { GetCrmClientProfileByFieldHandler } from "../queries/handlers/getcrmclientprofilebyfield.handler";
 import { GetAllCrmClientProfileHandler } from "../queries/handlers/getallcrmclientprofile.handler";
 import { CrmClientProfileCrudSaga } from "../sagas/crmclientprofile-crud.saga";
+import { CrmClientProfileCrossServiceSaga } from "../sagas/crm-client-profile-crossservice.saga";
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
@@ -108,6 +109,7 @@ import { EventStoreService } from "../shared/event-store/event-store.service";
     GetCrmClientProfileByFieldHandler,
     GetAllCrmClientProfileHandler,
     CrmClientProfileCrudSaga,
+    CrmClientProfileCrossServiceSaga,
     //Configurations
     {
       provide: 'EVENT_SOURCING_CONFIG',

@@ -54,6 +54,7 @@ import { GetPaymentMilestoneByIdHandler } from "../queries/handlers/getpaymentmi
 import { GetPaymentMilestoneByFieldHandler } from "../queries/handlers/getpaymentmilestonebyfield.handler";
 import { GetAllPaymentMilestoneHandler } from "../queries/handlers/getallpaymentmilestone.handler";
 import { PaymentMilestoneCrudSaga } from "../sagas/paymentmilestone-crud.saga";
+import { PaymentMilestoneCrossServiceSaga } from "../sagas/payment-milestone-crossservice.saga";
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
@@ -108,6 +109,7 @@ import { EventStoreService } from "../shared/event-store/event-store.service";
     GetPaymentMilestoneByFieldHandler,
     GetAllPaymentMilestoneHandler,
     PaymentMilestoneCrudSaga,
+    PaymentMilestoneCrossServiceSaga,
     //Configurations
     {
       provide: 'EVENT_SOURCING_CONFIG',

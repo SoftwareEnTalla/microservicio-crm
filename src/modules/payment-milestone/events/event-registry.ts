@@ -38,6 +38,7 @@ import { PaymentMilestoneAcceptedEvent } from './paymentmilestoneaccepted.event'
 import { PaymentMilestoneRejectedEvent } from './paymentmilestonerejected.event';
 import { MilestoneReadyForInvoicingEvent } from './milestonereadyforinvoicing.event';
 import { PaymentMilestoneInvoicedEvent } from './paymentmilestoneinvoiced.event';
+import { InvoiceCreatedExternalEvent } from './external.events';
 
 export type RegisteredEventClass<T extends BaseEvent = BaseEvent> = new (
   aggregateId: string,
@@ -122,6 +123,8 @@ export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
   'payment-milestone-rejected': createEventDefinition('payment-milestone-rejected', PaymentMilestoneRejectedEvent, EVENT_DEFINITION_OVERRIDES['payment-milestone-rejected']),
   'milestone-ready-for-invoicing': createEventDefinition('milestone-ready-for-invoicing', MilestoneReadyForInvoicingEvent, EVENT_DEFINITION_OVERRIDES['milestone-ready-for-invoicing']),
   'payment-milestone-invoiced': createEventDefinition('payment-milestone-invoiced', PaymentMilestoneInvoicedEvent, EVENT_DEFINITION_OVERRIDES['payment-milestone-invoiced']),
+  // Cross-service (consumido desde invoice-service)
+  'invoice.invoice-created': createEventDefinition('invoice.invoice-created', InvoiceCreatedExternalEvent, { replayable: false, maxRetries: 5 }),
 };
 
 export const EVENT_REGISTRY: Record<string, RegisteredEventClass> = Object.fromEntries(

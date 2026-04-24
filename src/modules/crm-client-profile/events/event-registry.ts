@@ -34,6 +34,11 @@ import { CrmClientProfileCreatedEvent } from './crmclientprofilecreated.event';
 import { CrmClientProfileUpdatedEvent } from './crmclientprofileupdated.event';
 import { CrmClientProfileDeletedEvent } from './crmclientprofiledeleted.event';
 import { CrmClientProfileArchivedEvent } from './crmclientprofilearchived.event';
+import {
+  ClientCreatedExternalEvent,
+  ClientUpdatedExternalEvent,
+  ClientDeletedExternalEvent,
+} from './external.events';
 
 export type RegisteredEventClass<T extends BaseEvent = BaseEvent> = new (
   aggregateId: string,
@@ -89,6 +94,10 @@ export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
   'crm-client-profile-updated': createEventDefinition('crm-client-profile-updated', CrmClientProfileUpdatedEvent, EVENT_DEFINITION_OVERRIDES['crm-client-profile-updated']),
   'crm-client-profile-deleted': createEventDefinition('crm-client-profile-deleted', CrmClientProfileDeletedEvent, EVENT_DEFINITION_OVERRIDES['crm-client-profile-deleted']),
   'crm-client-profile-archived': createEventDefinition('crm-client-profile-archived', CrmClientProfileArchivedEvent, EVENT_DEFINITION_OVERRIDES['crm-client-profile-archived']),
+  // Cross-service (consumidos desde client-service)
+  'client.client-created': createEventDefinition('client.client-created', ClientCreatedExternalEvent, { replayable: false, maxRetries: 5 }),
+  'client.client-updated': createEventDefinition('client.client-updated', ClientUpdatedExternalEvent, { replayable: false, maxRetries: 5 }),
+  'client.client-deleted': createEventDefinition('client.client-deleted', ClientDeletedExternalEvent, { replayable: false, maxRetries: 5 }),
 };
 
 export const EVENT_REGISTRY: Record<string, RegisteredEventClass> = Object.fromEntries(

@@ -35,6 +35,10 @@ import { CatalogSyncLogUpdatedEvent } from './catalogsynclogupdated.event';
 import { CatalogSyncLogDeletedEvent } from './catalogsynclogdeleted.event';
 import { CatalogSyncCompletedEvent } from './catalogsynccompleted.event';
 import { CatalogSyncFailedEvent } from './catalogsyncfailed.event';
+import {
+  CatalogItemUpsertedExternalEvent,
+  CatalogItemDeprecatedExternalEvent,
+} from './external.events';
 
 export type RegisteredEventClass<T extends BaseEvent = BaseEvent> = new (
   aggregateId: string,
@@ -86,6 +90,9 @@ export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
   'catalog-sync-log-deleted': createEventDefinition('catalog-sync-log-deleted', CatalogSyncLogDeletedEvent, EVENT_DEFINITION_OVERRIDES['catalog-sync-log-deleted']),
   'catalog-sync-completed': createEventDefinition('catalog-sync-completed', CatalogSyncCompletedEvent, EVENT_DEFINITION_OVERRIDES['catalog-sync-completed']),
   'catalog-sync-failed': createEventDefinition('catalog-sync-failed', CatalogSyncFailedEvent, EVENT_DEFINITION_OVERRIDES['catalog-sync-failed']),
+  // Cross-service (consumido desde catalog-service)
+  'catalog.catalog-item-upserted': createEventDefinition('catalog.catalog-item-upserted', CatalogItemUpsertedExternalEvent, { replayable: true, maxRetries: 5 }),
+  'catalog.catalog-item-deprecated': createEventDefinition('catalog.catalog-item-deprecated', CatalogItemDeprecatedExternalEvent, { replayable: true, maxRetries: 5 }),
 };
 
 export const EVENT_REGISTRY: Record<string, RegisteredEventClass> = Object.fromEntries(
