@@ -54,6 +54,10 @@ import { ProviderCreatedEvent } from '../events/providercreated.event';
 import { ProviderUpdatedEvent } from '../events/providerupdated.event';
 import { ProviderDeletedEvent } from '../events/providerdeleted.event';
 import { ProviderRatingUpdatedEvent } from "../events/providerratingupdated.event";
+import { ProviderUpstreamMirrorSyncedEvent } from "../events/providerupstreammirrorsynced.event";
+import { ProviderUpstreamMirrorDivergedEvent } from "../events/providerupstreammirrordiverged.event";
+import { ProviderUpstreamMirrorRevertedEvent } from "../events/providerupstreammirrorreverted.event";
+import { ProviderUpstreamReferenceBrokenEvent } from "../events/providerupstreamreferencebroken.event";
 
 //Enfoque Event Sourcing
 import { CommandBus, EventBus } from '@nestjs/cqrs';
@@ -66,7 +70,7 @@ import { EventSourcingHelper } from '../shared/decorators/event-sourcing.helper'
 import { EventSourcingConfigOptions } from '../shared/decorators/event-sourcing.decorator';
 
 
-@EventsHandler(ProviderCreatedEvent, ProviderUpdatedEvent, ProviderDeletedEvent, ProviderRatingUpdatedEvent)
+@EventsHandler(ProviderCreatedEvent, ProviderUpdatedEvent, ProviderDeletedEvent, ProviderRatingUpdatedEvent, ProviderUpstreamMirrorSyncedEvent, ProviderUpstreamMirrorDivergedEvent, ProviderUpstreamMirrorRevertedEvent, ProviderUpstreamReferenceBrokenEvent)
 @Injectable()
 export class ProviderCommandRepository implements IEventHandler<BaseEvent>{
 
@@ -160,6 +164,14 @@ export class ProviderCommandRepository implements IEventHandler<BaseEvent>{
         return await this.onProviderDeleted(event);
       case 'ProviderRatingUpdatedEvent':
         return await this.onProviderRatingUpdated(event);
+      case 'ProviderUpstreamMirrorSyncedEvent':
+        return await this.onProviderUpstreamMirrorSynced(event);
+      case 'ProviderUpstreamMirrorDivergedEvent':
+        return await this.onProviderUpstreamMirrorDiverged(event);
+      case 'ProviderUpstreamMirrorRevertedEvent':
+        return await this.onProviderUpstreamMirrorReverted(event);
+      case 'ProviderUpstreamReferenceBrokenEvent':
+        return await this.onProviderUpstreamReferenceBroken(event);
     }
     return false;
   }
@@ -255,6 +267,62 @@ export class ProviderCommandRepository implements IEventHandler<BaseEvent>{
 
   private async onProviderRatingUpdated(event: ProviderRatingUpdatedEvent) {
     logger.info('Ready to handle onProviderRatingUpdated event on repository:', event);
+    const payloadInstance = (event as any).payload?.instance;
+    if (payloadInstance) {
+      const projectedEntity = this.repository.create({
+        ...(payloadInstance as any),
+        id: event.aggregateId,
+        type: 'provider'
+      } as Partial<Provider>);
+      return await this.repository.save(projectedEntity as Provider);
+    }
+    return true;
+  }
+
+  private async onProviderUpstreamMirrorSynced(event: ProviderUpstreamMirrorSyncedEvent) {
+    logger.info('Ready to handle onProviderUpstreamMirrorSynced event on repository:', event);
+    const payloadInstance = (event as any).payload?.instance;
+    if (payloadInstance) {
+      const projectedEntity = this.repository.create({
+        ...(payloadInstance as any),
+        id: event.aggregateId,
+        type: 'provider'
+      } as Partial<Provider>);
+      return await this.repository.save(projectedEntity as Provider);
+    }
+    return true;
+  }
+
+  private async onProviderUpstreamMirrorDiverged(event: ProviderUpstreamMirrorDivergedEvent) {
+    logger.info('Ready to handle onProviderUpstreamMirrorDiverged event on repository:', event);
+    const payloadInstance = (event as any).payload?.instance;
+    if (payloadInstance) {
+      const projectedEntity = this.repository.create({
+        ...(payloadInstance as any),
+        id: event.aggregateId,
+        type: 'provider'
+      } as Partial<Provider>);
+      return await this.repository.save(projectedEntity as Provider);
+    }
+    return true;
+  }
+
+  private async onProviderUpstreamMirrorReverted(event: ProviderUpstreamMirrorRevertedEvent) {
+    logger.info('Ready to handle onProviderUpstreamMirrorReverted event on repository:', event);
+    const payloadInstance = (event as any).payload?.instance;
+    if (payloadInstance) {
+      const projectedEntity = this.repository.create({
+        ...(payloadInstance as any),
+        id: event.aggregateId,
+        type: 'provider'
+      } as Partial<Provider>);
+      return await this.repository.save(projectedEntity as Provider);
+    }
+    return true;
+  }
+
+  private async onProviderUpstreamReferenceBroken(event: ProviderUpstreamReferenceBrokenEvent) {
+    logger.info('Ready to handle onProviderUpstreamReferenceBroken event on repository:', event);
     const payloadInstance = (event as any).payload?.instance;
     if (payloadInstance) {
       const projectedEntity = this.repository.create({

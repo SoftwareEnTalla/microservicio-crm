@@ -120,33 +120,13 @@ export class BaseProviderDto {
 
   @ApiProperty({
     type: () => String,
-    nullable: true,
-    description: 'Persona de contacto',
+    nullable: false,
+    description: 'Tipo de persona: natural hereda de hrms:person directamente; jurídica referencia contactPersonId',
   })
   @IsString()
-  @IsOptional()
-  @Field(() => String, { description: 'Persona de contacto', nullable: true })
-  contactPerson?: string = '';
-
-  @ApiProperty({
-    type: () => String,
-    nullable: true,
-    description: 'Email de contacto',
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, { description: 'Email de contacto', nullable: true })
-  email?: string = '';
-
-  @ApiProperty({
-    type: () => String,
-    nullable: true,
-    description: 'Teléfono de contacto',
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, { description: 'Teléfono de contacto', nullable: true })
-  phone?: string = '';
+  @IsNotEmpty()
+  @Field(() => String, { description: 'Tipo de persona: natural hereda de hrms:person directamente; jurídica referencia contactPersonId', nullable: false })
+  personType!: string;
 
   @ApiProperty({
     type: () => String,
@@ -227,6 +207,146 @@ export class BaseProviderDto {
   @IsOptional()
   @Field(() => GraphQLJSON, { description: 'Metadata libre', nullable: true })
   metadata?: Record<string, any> = {};
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'FK soft a hrms:person canónica del provider (caso persona natural)',
+  })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { description: 'FK soft a hrms:person canónica del provider (caso persona natural)', nullable: true })
+  personId?: string;
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'FK soft a hrms:person del contacto comercial (caso persona jurídica)',
+  })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { description: 'FK soft a hrms:person del contacto comercial (caso persona jurídica)', nullable: true })
+  contactPersonId?: string;
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Nombre — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Nombre — mirror de hrms:person', nullable: true })
+  firstName?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Apellido — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Apellido — mirror de hrms:person', nullable: true })
+  lastName?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Tipo de documento — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Tipo de documento — mirror de hrms:person', nullable: true })
+  documentType?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Número de documento — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Número de documento — mirror de hrms:person', nullable: true })
+  documentNumber?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Persona de contacto — mirror (displayName de hrms:person via contactPersonId)',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Persona de contacto — mirror (displayName de hrms:person via contactPersonId)', nullable: true })
+  contactPerson?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Email de contacto — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Email de contacto — mirror de hrms:person', nullable: true })
+  email?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Teléfono de contacto — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Teléfono de contacto — mirror de hrms:person', nullable: true })
+  phone?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: false,
+    description: 'Estado de sincronización con el upstream hrms:person',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { description: 'Estado de sincronización con el upstream hrms:person', nullable: false })
+  upstreamSyncStatus!: string;
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Última sincronización exitosa con upstream',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Última sincronización exitosa con upstream', nullable: true })
+  upstreamSyncedAt?: Date = new Date();
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Hash SHA-256 del snapshot mirror recibido del upstream',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Hash SHA-256 del snapshot mirror recibido del upstream', nullable: true })
+  upstreamHash?: string = '';
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Último intento fallido de sincronización',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Último intento fallido de sincronización', nullable: true })
+  upstreamLastErrorAt?: Date = new Date();
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Último intento (ok o ko) de sincronización',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Último intento (ok o ko) de sincronización', nullable: true })
+  upstreamLastAttemptAt?: Date = new Date();
 
   // Constructor
   constructor(partial: Partial<BaseProviderDto>) {

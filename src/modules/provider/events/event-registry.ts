@@ -34,6 +34,10 @@ import { ProviderCreatedEvent } from './providercreated.event';
 import { ProviderUpdatedEvent } from './providerupdated.event';
 import { ProviderDeletedEvent } from './providerdeleted.event';
 import { ProviderRatingUpdatedEvent } from './providerratingupdated.event';
+import { ProviderUpstreamMirrorSyncedEvent } from './providerupstreammirrorsynced.event';
+import { ProviderUpstreamMirrorDivergedEvent } from './providerupstreammirrordiverged.event';
+import { ProviderUpstreamMirrorRevertedEvent } from './providerupstreammirrorreverted.event';
+import { ProviderUpstreamReferenceBrokenEvent } from './providerupstreamreferencebroken.event';
 
 export type RegisteredEventClass<T extends BaseEvent = BaseEvent> = new (
   aggregateId: string,
@@ -87,6 +91,26 @@ const EVENT_DEFINITION_OVERRIDES: Partial<Record<string, Partial<Omit<Registered
     maxRetries: 5,
     replayable: true,
   },
+  'provider-upstream-mirror-synced': {
+    version: '1.0.0',
+    maxRetries: 5,
+    replayable: true,
+  },
+  'provider-upstream-mirror-diverged': {
+    version: '1.0.0',
+    maxRetries: 5,
+    replayable: true,
+  },
+  'provider-upstream-mirror-reverted': {
+    version: '1.0.0',
+    maxRetries: 5,
+    replayable: true,
+  },
+  'provider-upstream-reference-broken': {
+    version: '1.0.0',
+    maxRetries: 5,
+    replayable: true,
+  },
 };
 
 export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
@@ -94,6 +118,10 @@ export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
   'provider-updated': createEventDefinition('provider-updated', ProviderUpdatedEvent, EVENT_DEFINITION_OVERRIDES['provider-updated']),
   'provider-deleted': createEventDefinition('provider-deleted', ProviderDeletedEvent, EVENT_DEFINITION_OVERRIDES['provider-deleted']),
   'provider-rating-updated': createEventDefinition('provider-rating-updated', ProviderRatingUpdatedEvent, EVENT_DEFINITION_OVERRIDES['provider-rating-updated']),
+  'provider-upstream-mirror-synced': createEventDefinition('provider-upstream-mirror-synced', ProviderUpstreamMirrorSyncedEvent, EVENT_DEFINITION_OVERRIDES['provider-upstream-mirror-synced']),
+  'provider-upstream-mirror-diverged': createEventDefinition('provider-upstream-mirror-diverged', ProviderUpstreamMirrorDivergedEvent, EVENT_DEFINITION_OVERRIDES['provider-upstream-mirror-diverged']),
+  'provider-upstream-mirror-reverted': createEventDefinition('provider-upstream-mirror-reverted', ProviderUpstreamMirrorRevertedEvent, EVENT_DEFINITION_OVERRIDES['provider-upstream-mirror-reverted']),
+  'provider-upstream-reference-broken': createEventDefinition('provider-upstream-reference-broken', ProviderUpstreamReferenceBrokenEvent, EVENT_DEFINITION_OVERRIDES['provider-upstream-reference-broken']),
 };
 
 export const EVENT_REGISTRY: Record<string, RegisteredEventClass> = Object.fromEntries(

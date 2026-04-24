@@ -79,36 +79,14 @@ export class Provider extends BaseEntity {
 
   @ApiProperty({
     type: () => String,
-    nullable: true,
-    description: 'Persona de contacto',
+    nullable: false,
+    description: 'Tipo de persona: natural hereda de hrms:person directamente; jurídica referencia contactPersonId',
   })
   @IsString()
-  @IsOptional()
-  @Field(() => String, { description: 'Persona de contacto', nullable: true })
-  @Column({ type: 'varchar', nullable: true, length: 180, comment: 'Persona de contacto' })
-  contactPerson?: string = '';
-
-  @ApiProperty({
-    type: () => String,
-    nullable: true,
-    description: 'Email de contacto',
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, { description: 'Email de contacto', nullable: true })
-  @Column({ type: 'varchar', nullable: true, length: 120, comment: 'Email de contacto' })
-  email?: string = '';
-
-  @ApiProperty({
-    type: () => String,
-    nullable: true,
-    description: 'Teléfono de contacto',
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, { description: 'Teléfono de contacto', nullable: true })
-  @Column({ type: 'varchar', nullable: true, length: 40, comment: 'Teléfono de contacto' })
-  phone?: string = '';
+  @IsNotEmpty()
+  @Field(() => String, { description: 'Tipo de persona: natural hereda de hrms:person directamente; jurídica referencia contactPersonId', nullable: false })
+  @Column({ type: 'varchar', nullable: false, length: 255, default: 'JURIDICAL', comment: 'Tipo de persona: natural hereda de hrms:person directamente; jurídica referencia contactPersonId' })
+  personType!: string;
 
   @ApiProperty({
     type: () => String,
@@ -197,6 +175,160 @@ export class Provider extends BaseEntity {
   @Field(() => GraphQLJSON, { description: 'Metadata libre', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Metadata libre' })
   metadata?: Record<string, any> = {};
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'FK soft a hrms:person canónica del provider (caso persona natural)',
+  })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { description: 'FK soft a hrms:person canónica del provider (caso persona natural)', nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'FK soft a hrms:person canónica del provider (caso persona natural)' })
+  personId?: string;
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'FK soft a hrms:person del contacto comercial (caso persona jurídica)',
+  })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { description: 'FK soft a hrms:person del contacto comercial (caso persona jurídica)', nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'FK soft a hrms:person del contacto comercial (caso persona jurídica)' })
+  contactPersonId?: string;
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Nombre — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Nombre — mirror de hrms:person', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 120, comment: 'Nombre — mirror de hrms:person' })
+  firstName?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Apellido — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Apellido — mirror de hrms:person', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 120, comment: 'Apellido — mirror de hrms:person' })
+  lastName?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Tipo de documento — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Tipo de documento — mirror de hrms:person', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 255, comment: 'Tipo de documento — mirror de hrms:person' })
+  documentType?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Número de documento — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Número de documento — mirror de hrms:person', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 60, comment: 'Número de documento — mirror de hrms:person' })
+  documentNumber?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Persona de contacto — mirror (displayName de hrms:person via contactPersonId)',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Persona de contacto — mirror (displayName de hrms:person via contactPersonId)', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 180, comment: 'Persona de contacto — mirror (displayName de hrms:person via contactPersonId)' })
+  contactPerson?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Email de contacto — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Email de contacto — mirror de hrms:person', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 120, comment: 'Email de contacto — mirror de hrms:person' })
+  email?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Teléfono de contacto — mirror de hrms:person',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Teléfono de contacto — mirror de hrms:person', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 40, comment: 'Teléfono de contacto — mirror de hrms:person' })
+  phone?: string = '';
+
+  @ApiProperty({
+    type: () => String,
+    nullable: false,
+    description: 'Estado de sincronización con el upstream hrms:person',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { description: 'Estado de sincronización con el upstream hrms:person', nullable: false })
+  @Column({ type: 'varchar', nullable: false, length: 255, default: 'LOCAL_ONLY', comment: 'Estado de sincronización con el upstream hrms:person' })
+  upstreamSyncStatus!: string;
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Última sincronización exitosa con upstream',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Última sincronización exitosa con upstream', nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Última sincronización exitosa con upstream' })
+  upstreamSyncedAt?: Date = new Date();
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Hash SHA-256 del snapshot mirror recibido del upstream',
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { description: 'Hash SHA-256 del snapshot mirror recibido del upstream', nullable: true })
+  @Column({ type: 'varchar', nullable: true, length: 64, comment: 'Hash SHA-256 del snapshot mirror recibido del upstream' })
+  upstreamHash?: string = '';
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Último intento fallido de sincronización',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Último intento fallido de sincronización', nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Último intento fallido de sincronización' })
+  upstreamLastErrorAt?: Date = new Date();
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Último intento (ok o ko) de sincronización',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Último intento (ok o ko) de sincronización', nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Último intento (ok o ko) de sincronización' })
+  upstreamLastAttemptAt?: Date = new Date();
 
   protected executeDslLifecycle(): void {
     // Rule: rating-in-valid-range

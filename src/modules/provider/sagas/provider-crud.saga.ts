@@ -37,6 +37,10 @@ import {
   ProviderUpdatedEvent,
   ProviderDeletedEvent,
   ProviderRatingUpdatedEvent,
+  ProviderUpstreamMirrorSyncedEvent,
+  ProviderUpstreamMirrorDivergedEvent,
+  ProviderUpstreamMirrorRevertedEvent,
+  ProviderUpstreamReferenceBrokenEvent,
 } from '../events/exporting.event';
 import {
   SagaProviderFailedEvent
@@ -106,6 +110,50 @@ export class ProviderCrudSaga {
       ofType(ProviderRatingUpdatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para evento de dominio ProviderRatingUpdated: ${event.aggregateId}`);
+      }),
+      map(() => null)
+    );
+  };
+
+  @Saga()
+  onProviderUpstreamMirrorSynced = ($events: Observable<ProviderUpstreamMirrorSyncedEvent>) => {
+    return $events.pipe(
+      ofType(ProviderUpstreamMirrorSyncedEvent),
+      tap(event => {
+        this.logger.log(`Saga iniciada para evento de dominio ProviderUpstreamMirrorSynced: ${event.aggregateId}`);
+      }),
+      map(() => null)
+    );
+  };
+
+  @Saga()
+  onProviderUpstreamMirrorDiverged = ($events: Observable<ProviderUpstreamMirrorDivergedEvent>) => {
+    return $events.pipe(
+      ofType(ProviderUpstreamMirrorDivergedEvent),
+      tap(event => {
+        this.logger.log(`Saga iniciada para evento de dominio ProviderUpstreamMirrorDiverged: ${event.aggregateId}`);
+      }),
+      map(() => null)
+    );
+  };
+
+  @Saga()
+  onProviderUpstreamMirrorReverted = ($events: Observable<ProviderUpstreamMirrorRevertedEvent>) => {
+    return $events.pipe(
+      ofType(ProviderUpstreamMirrorRevertedEvent),
+      tap(event => {
+        this.logger.log(`Saga iniciada para evento de dominio ProviderUpstreamMirrorReverted: ${event.aggregateId}`);
+      }),
+      map(() => null)
+    );
+  };
+
+  @Saga()
+  onProviderUpstreamReferenceBroken = ($events: Observable<ProviderUpstreamReferenceBrokenEvent>) => {
+    return $events.pipe(
+      ofType(ProviderUpstreamReferenceBrokenEvent),
+      tap(event => {
+        this.logger.log(`Saga iniciada para evento de dominio ProviderUpstreamReferenceBroken: ${event.aggregateId}`);
       }),
       map(() => null)
     );

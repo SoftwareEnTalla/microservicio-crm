@@ -54,6 +54,10 @@ import { GetProviderByIdHandler } from "../queries/handlers/getproviderbyid.hand
 import { GetProviderByFieldHandler } from "../queries/handlers/getproviderbyfield.handler";
 import { GetAllProviderHandler } from "../queries/handlers/getallprovider.handler";
 import { ProviderCrudSaga } from "../sagas/provider-crud.saga";
+import { ProviderUpstreamClientService } from "../services/provider-upstream-client.service";
+import { ProviderUpstreamReconcilerService } from "../services/provider-upstream-reconciler.service";
+import { ProviderUpstreamMirrorSaga } from "../sagas/provider-upstream-mirror.saga";
+import { ProviderUpstreamSearchController } from "../controllers/provider-upstream-search.controller";
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
@@ -82,7 +86,7 @@ import { EventStoreService } from "../shared/event-store/event-store.service";
       },
     }),
   ],
-  controllers: [ProviderCommandController, ProviderQueryController],
+  controllers: [ProviderCommandController, ProviderQueryController, ProviderUpstreamSearchController],
   providers: [
     //Services
     EventStoreService,
@@ -108,7 +112,9 @@ import { EventStoreService } from "../shared/event-store/event-store.service";
     GetProviderByFieldHandler,
     GetAllProviderHandler,
     ProviderCrudSaga,
-    //Configurations
+    ProviderUpstreamClientService,
+    ProviderUpstreamReconcilerService,
+    ProviderUpstreamMirrorSaga,    //Configurations
     {
       provide: 'EVENT_SOURCING_CONFIG',
       useFactory: () => ({
@@ -140,7 +146,7 @@ import { EventStoreService } from "../shared/event-store/event-store.service";
     //Interceptors
     ProviderInterceptor,
     ProviderLoggingInterceptor,
-  ],
+    ProviderUpstreamClientService,  ],
 })
 export class ProviderModule {}
 

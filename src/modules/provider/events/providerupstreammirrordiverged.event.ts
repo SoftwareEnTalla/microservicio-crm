@@ -27,14 +27,37 @@
  *
  *
  */
-export * from "./providerdeleted.event"; 
-export * from "./providercreated.event";
-export * from "./providerupdated.event";
-export * from "./providerratingupdated.event";
-export * from "./providerupstreammirrorsynced.event";
-export * from "./providerupstreammirrordiverged.event";
-export * from "./providerupstreammirrorreverted.event";
-export * from "./providerupstreamreferencebroken.event";
-export * from "./event-registry";
-export * from "./base.event";
-export * from "./provider-failed.event";
+
+
+
+import { Provider } from '../entities/provider.entity';
+import { BaseEvent, PayloadEvent } from './base.event'; 
+import { v4 as uuidv4 } from "uuid";
+
+export class ProviderUpstreamMirrorDivergedEvent extends BaseEvent {
+  constructor(
+    public readonly aggregateId: string,
+    public readonly payload: PayloadEvent<any|Provider>
+  ) {
+    super(aggregateId);
+  }
+
+  
+         // Método estático para construcción consistente del evento
+        static create(
+          instanceId: string,
+          instance: any|Provider,
+          userId: string,
+          correlationId?: string
+        ): ProviderUpstreamMirrorDivergedEvent {
+          return new ProviderUpstreamMirrorDivergedEvent(instanceId, {
+            instance: instance,
+            metadata: {
+              initiatedBy: userId,
+              correlationId:correlationId || uuidv4(),
+            },
+          });
+        }
+        
+
+}

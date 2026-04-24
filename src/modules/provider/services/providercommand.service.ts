@@ -52,6 +52,10 @@ import { ModuleRef } from "@nestjs/core";
 import { ProviderQueryService } from "./providerquery.service";
 import { BaseEvent } from "../events/base.event";
 import { ProviderRatingUpdatedEvent } from '../events/providerratingupdated.event';
+import { ProviderUpstreamMirrorSyncedEvent } from '../events/providerupstreammirrorsynced.event';
+import { ProviderUpstreamMirrorDivergedEvent } from '../events/providerupstreammirrordiverged.event';
+import { ProviderUpstreamMirrorRevertedEvent } from '../events/providerupstreammirrorreverted.event';
+import { ProviderUpstreamReferenceBrokenEvent } from '../events/providerupstreamreferencebroken.event';
 
 @Injectable()
 export class ProviderCommandService implements OnModuleInit {
