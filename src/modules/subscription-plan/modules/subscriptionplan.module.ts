@@ -54,6 +54,7 @@ import { GetSubscriptionPlanByIdHandler } from "../queries/handlers/getsubscript
 import { GetSubscriptionPlanByFieldHandler } from "../queries/handlers/getsubscriptionplanbyfield.handler";
 import { GetAllSubscriptionPlanHandler } from "../queries/handlers/getallsubscriptionplan.handler";
 import { SubscriptionPlanCrudSaga } from "../sagas/subscriptionplan-crud.saga";
+
 import { EVENT_TOPICS } from "../events/event-registry";
 
 //Interceptors
