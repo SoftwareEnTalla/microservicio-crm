@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { SubscriptionPlanCommandController } from "../controllers/subscriptionplancommand.controller";
 import { SubscriptionPlanLoggingInterceptor } from "../interceptors/subscriptionplan.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { SubscriptionPlanAuthGuard } from "../guards/subscriptionplanauthguard.guard";
 
 @Module({
-  controllers: [SubscriptionPlanCommandController],
   providers: [
     SubscriptionPlanAuthGuard,
     SubscriptionPlanLoggingInterceptor,

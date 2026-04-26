@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { GlobalPaymentRuleCommandController } from "../controllers/globalpaymentrulecommand.controller";
 import { GlobalPaymentRuleLoggingInterceptor } from "../interceptors/globalpaymentrule.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { GlobalPaymentRuleAuthGuard } from "../guards/globalpaymentruleauthguard.guard";
 
 @Module({
-  controllers: [GlobalPaymentRuleCommandController],
   providers: [
     GlobalPaymentRuleAuthGuard,
     GlobalPaymentRuleLoggingInterceptor,

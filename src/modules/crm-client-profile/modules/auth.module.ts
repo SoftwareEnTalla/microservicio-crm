@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { CrmClientProfileCommandController } from "../controllers/crmclientprofilecommand.controller";
 import { CrmClientProfileLoggingInterceptor } from "../interceptors/crmclientprofile.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { CrmClientProfileAuthGuard } from "../guards/crmclientprofileauthguard.guard";
 
 @Module({
-  controllers: [CrmClientProfileCommandController],
   providers: [
     CrmClientProfileAuthGuard,
     CrmClientProfileLoggingInterceptor,

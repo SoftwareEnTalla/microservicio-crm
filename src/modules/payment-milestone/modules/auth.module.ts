@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { PaymentMilestoneCommandController } from "../controllers/paymentmilestonecommand.controller";
 import { PaymentMilestoneLoggingInterceptor } from "../interceptors/paymentmilestone.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { PaymentMilestoneAuthGuard } from "../guards/paymentmilestoneauthguard.guard";
 
 @Module({
-  controllers: [PaymentMilestoneCommandController],
   providers: [
     PaymentMilestoneAuthGuard,
     PaymentMilestoneLoggingInterceptor,

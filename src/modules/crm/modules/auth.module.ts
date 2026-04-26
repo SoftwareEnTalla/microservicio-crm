@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { CrmCommandController } from "../controllers/crmcommand.controller";
 import { CrmLoggingInterceptor } from "../interceptors/crm.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { CrmAuthGuard } from "../guards/crmauthguard.guard";
 
 @Module({
-  controllers: [CrmCommandController],
   providers: [
     CrmAuthGuard,
     CrmLoggingInterceptor,

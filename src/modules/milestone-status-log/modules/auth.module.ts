@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { MilestoneStatusLogCommandController } from "../controllers/milestonestatuslogcommand.controller";
 import { MilestoneStatusLogLoggingInterceptor } from "../interceptors/milestonestatuslog.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { MilestoneStatusLogAuthGuard } from "../guards/milestonestatuslogauthguard.guard";
 
 @Module({
-  controllers: [MilestoneStatusLogCommandController],
   providers: [
     MilestoneStatusLogAuthGuard,
     MilestoneStatusLogLoggingInterceptor,

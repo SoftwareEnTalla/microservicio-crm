@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { PersonTypeCommandController } from "../controllers/persontypecommand.controller";
 import { PersonTypeLoggingInterceptor } from "../interceptors/persontype.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { PersonTypeAuthGuard } from "../guards/persontypeauthguard.guard";
 
 @Module({
-  controllers: [PersonTypeCommandController],
   providers: [
     PersonTypeAuthGuard,
     PersonTypeLoggingInterceptor,

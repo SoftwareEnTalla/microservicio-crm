@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { ContractStatusLogCommandController } from "../controllers/contractstatuslogcommand.controller";
 import { ContractStatusLogLoggingInterceptor } from "../interceptors/contractstatuslog.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { ContractStatusLogAuthGuard } from "../guards/contractstatuslogauthguard.guard";
 
 @Module({
-  controllers: [ContractStatusLogCommandController],
   providers: [
     ContractStatusLogAuthGuard,
     ContractStatusLogLoggingInterceptor,

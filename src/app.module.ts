@@ -101,6 +101,7 @@ import { IncentiveTypeModule } from "./modules/incentive-type/modules/incentivet
 import { PaymentMilestoneStatusModule } from "./modules/payment-milestone-status/modules/paymentmilestonestatus.module";
 import { PaymentRuleTypeModule } from "./modules/payment-rule-type/modules/paymentruletype.module";
 import { PersonTypeModule } from "./modules/person-type/modules/persontype.module";
+import { CrmClientProfileStatusModule } from "./modules/crm-client-profile-status/modules/crmclientprofilestatus.module";
 @Module({
   imports: [
     // Se importa/registra el módulo de caché
@@ -187,6 +188,7 @@ import { PersonTypeModule } from "./modules/person-type/modules/persontype.modul
     PaymentMilestoneStatusModule,
     PaymentRuleTypeModule,
     PersonTypeModule,
+      CrmClientProfileStatusModule,
   ],
 
   /**

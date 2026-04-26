@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { BillingCycleCommandController } from "../controllers/billingcyclecommand.controller";
 import { BillingCycleLoggingInterceptor } from "../interceptors/billingcycle.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { BillingCycleAuthGuard } from "../guards/billingcycleauthguard.guard";
 
 @Module({
-  controllers: [BillingCycleCommandController],
   providers: [
     BillingCycleAuthGuard,
     BillingCycleLoggingInterceptor,

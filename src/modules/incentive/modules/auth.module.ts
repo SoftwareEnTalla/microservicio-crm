@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { IncentiveCommandController } from "../controllers/incentivecommand.controller";
 import { IncentiveLoggingInterceptor } from "../interceptors/incentive.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { IncentiveAuthGuard } from "../guards/incentiveauthguard.guard";
 
 @Module({
-  controllers: [IncentiveCommandController],
   providers: [
     IncentiveAuthGuard,
     IncentiveLoggingInterceptor,

@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { TermsAndConditionCommandController } from "../controllers/termsandconditioncommand.controller";
 import { TermsAndConditionLoggingInterceptor } from "../interceptors/termsandcondition.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { TermsAndConditionAuthGuard } from "../guards/termsandconditionauthguard.guard";
 
 @Module({
-  controllers: [TermsAndConditionCommandController],
   providers: [
     TermsAndConditionAuthGuard,
     TermsAndConditionLoggingInterceptor,
