@@ -93,6 +93,14 @@ import LoggerService, { logger } from "@core/logs/logger";
 
 */
 
+import { HorizontalModule } from "@common/horizontal";
+
+import { NomencladorListenersModule } from './modules/nomenclador-listeners/nomenclador-listeners.module';
+import { GlobalPaymentRuleModule } from "./modules/global-payment-rule/modules/globalpaymentrule.module";
+import { IncentiveTypeModule } from "./modules/incentive-type/modules/incentivetype.module";
+import { PaymentMilestoneStatusModule } from "./modules/payment-milestone-status/modules/paymentmilestonestatus.module";
+import { PaymentRuleTypeModule } from "./modules/payment-rule-type/modules/paymentruletype.module";
+import { PersonTypeModule } from "./modules/person-type/modules/persontype.module";
 @Module({
   imports: [
     // Se importa/registra el módulo de caché
@@ -141,6 +149,7 @@ import LoggerService, { logger } from "@core/logs/logger";
      * Módulos Crm de la aplicación
      */
     CqrsModule,
+    HorizontalModule,
     CrmModule,
     CatalogClientModule,
         CatalogSyncLogModule,
@@ -171,6 +180,13 @@ import LoggerService, { logger } from "@core/logs/logger";
           }),
         ]
       : []),
+  
+    NomencladorListenersModule,
+      GlobalPaymentRuleModule,
+    IncentiveTypeModule,
+    PaymentMilestoneStatusModule,
+    PaymentRuleTypeModule,
+    PersonTypeModule,
   ],
 
   /**

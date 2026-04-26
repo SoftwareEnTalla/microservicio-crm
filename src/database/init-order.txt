@@ -1,0 +1,9 @@
+postgres-1-catalog-sync-log.sql
+postgres-2-contract-status.sql
+postgres-3-crm-client-profile-status.sql
+postgres-4-incentive-type.sql
+postgres-5-payment-rule-type.sql
+postgres-6-payment-milestone-status.sql
+postgres-7-person-type.sql
+postgres-8-billing-cycle.sql
+postgres-9-global-payment-rule.sql
