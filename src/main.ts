@@ -130,15 +130,47 @@ async function bootstrap() {
     const globalPrefix = "api";
     app.setGlobalPrefix(globalPrefix);
     // Helmet (headers de seguridad). Carga dinámica para no romper si la dep no está instalada en runtime.
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const helmet = require("helmet");
-      const helmetFn = (helmet && (helmet.default || helmet)) as any;
-      if (typeof helmetFn === "function") {
-        app.use(helmetFn());
+    // Configurable vía .env:
+    //   HELMET_ENABLE=false           -> desactiva helmet por completo
+    //   HELMET_HSTS=false             -> desactiva Strict-Transport-Security (recomendado en dev http)
+    //   HELMET_CSP=false              -> desactiva Content-Security-Policy (necesario para Swagger UI en dev)
+    const helmetEnabled = (process.env.HELMET_ENABLE ?? "true").toLowerCase() !== "false";
+    if (helmetEnabled) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const helmet = require("helmet");
+        const helmetFn = (helmet && (helmet.default || helmet)) as any;
+        if (typeof helmetFn === "function") {
+          const isProd = process.env.NODE_ENV === "production";
+          const hstsEnabled = (process.env.HELMET_HSTS ?? (isProd ? "true" : "false")).toLowerCase() === "true";
+          const cspEnabled = (process.env.HELMET_CSP ?? (isProd ? "true" : "false")).toLowerCase() === "true";
+          app.use(
+            helmetFn({
+              contentSecurityPolicy: cspEnabled ? undefined : false,
+              crossOriginEmbedderPolicy: false,
+              crossOriginOpenerPolicy: false,
+              crossOriginResourcePolicy: false,
+              hsts: hstsEnabled ? undefined : false,
+            })
+          );
+          // Garantizar que ningún proxy/middleware previo deje el header HSTS si está desactivado
+          if (!hstsEnabled) {
+            app.use((req: any, res: any, next: any) => {
+              res.removeHeader && res.removeHeader("Strict-Transport-Security");
+              next();
+            });
+          }
+        }
+      } catch (err) {
+        logger.warn("Helmet no disponible, continuando sin headers de seguridad: " + (err as Error).message);
       }
-    } catch (err) {
-      logger.warn("Helmet no disponible, continuando sin headers de seguridad: " + (err as Error).message);
+    } else {
+      logger.warn("Helmet deshabilitado por configuración (HELMET_ENABLE=false)");
+      // Defensivo: aunque helmet esté off, asegurar que no quede HSTS de un middleware anterior
+      app.use((req: any, res: any, next: any) => {
+        res.removeHeader && res.removeHeader("Strict-Transport-Security");
+        next();
+      });
     }
 
     // Compression (gzip) global. Carga dinámica.

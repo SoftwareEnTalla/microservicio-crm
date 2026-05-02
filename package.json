@@ -15,7 +15,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "NODE_PATH=./dist node -r tsconfig-paths/register ./node_modules/jest/bin/jest.js --passWithNoTests",
+    "test": "LOG_EXECUTION_TIME=false LOG_READY=false NODE_PATH=./dist node -r tsconfig-paths/register ./node_modules/jest/bin/jest.js --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -34,6 +34,7 @@
     "@nestjs/graphql": "^13.0.2",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.1.0",
+    "@nestjs/throttler": "^6.2.1",
     "@nestjs/typeorm": "^11.0.0",
     "@ngneat/transloco": "^6.0.4",
     "apollo-server-express": "^3.13.0",
@@ -41,14 +42,17 @@
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "compression": "^1.7.4",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "esm": "^3.2.25",
     "graphql": "^16.10.0",
     "graphql-type-json": "^0.3.2",
+    "helmet": "^7.2.0",
     "https-proxy-agent": "^7.0.6",
     "i18n": "^0.15.1",
     "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "nestjs-i18n": "^10.5.1",
     "object-hash": "^3.0.0",
@@ -64,8 +68,10 @@
     "@nestjs/testing": "^11.0.1",
     "@types/cache-manager": "^4.0.6",
     "@types/cache-manager-redis-store": "^2.0.4",
+    "@types/compression": "^1.7.5",
     "@types/i18n": "^0.13.12",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.13.10",
     "@types/uuid": "^10.0.0",
     "eslint": "^9.18.0",
@@ -87,6 +93,7 @@
     ],
     "rootDir": "src",
     "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1",
       "^@common/(.*)$": "<rootDir>/common/$1",
       "^@core/(.*)$": "<rootDir>/core/$1",
       "^@modules/(.*)$": "<rootDir>/modules/$1",
@@ -107,4 +114,3 @@
     "testEnvironment": "node"
   }
 }
-

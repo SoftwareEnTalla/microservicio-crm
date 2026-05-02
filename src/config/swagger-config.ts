@@ -17,7 +17,12 @@ export function setupSwagger(
   version: string = "1.0"
 ): string {
   try {
-    const swaggerConfig = new DocumentBuilder()
+    const isProd = process.env.NODE_ENV === "production";
+    const port = process.env.PORT || "3000";
+    const host = process.env.HOST || "localhost";
+    const localServerUrl = `http://${host}:${port}`;
+
+    const builder = new DocumentBuilder()
       .setTitle(title)
       .setDescription(description)
       .setVersion(version)
@@ -31,11 +36,21 @@ export function setupSwagger(
           in: "header",
         },
         "JWT-auth"
-      )
-      .addServer("https://api.production.com", "Production")
-      .addServer("https://api.staging.com", "Staging")
-      .addServer("http://localhost:3000", "Local Development")
-      .build();
+      );
+
+    // El primer server registrado es el que Swagger UI usa por defecto.
+    // En desarrollo SIEMPRE va el local primero (http) para evitar que el
+    // navegador intente cargar assets por https y rompa con TLS errors.
+    if (isProd) {
+      builder
+        .addServer("https://api.production.com", "Production")
+        .addServer("https://api.staging.com", "Staging")
+        .addServer(localServerUrl, "Local Development");
+    } else {
+      builder.addServer(localServerUrl, "Local Development");
+    }
+
+    const swaggerConfig = builder.build();
 
     const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
       include: [],
