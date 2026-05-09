@@ -97,7 +97,7 @@ export class ContractCommandService implements OnModuleInit {
   }
 
   private dslValue(entityData: Record<string, any>, currentData: Record<string, any>, inputData: Record<string, any>, field: string): any {
-    return entityData?.[field] ?? currentData?.[field] ?? inputData?.[field];
+    return inputData?.[field] ?? entityData?.[field] ?? currentData?.[field];
   }
 
   private async publishDslDomainEvents(events: BaseEvent[]): Promise<void> {
