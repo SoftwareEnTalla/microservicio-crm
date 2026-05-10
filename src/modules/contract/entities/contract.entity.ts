@@ -156,7 +156,7 @@ export class Contract extends BaseEntity {
   @IsOptional()
   @Field(() => Date, { description: 'Fecha de fin', nullable: true })
   @Column({ type: 'date', nullable: true, comment: 'Fecha de fin' })
-  endDate?: Date = new Date();
+  endDate?: Date;
 
   @ApiProperty({
     type: () => Boolean,
@@ -200,7 +200,7 @@ export class Contract extends BaseEntity {
   @IsOptional()
   @Field(() => Date, { description: 'Fecha de firma', nullable: true })
   @Column({ type: 'timestamp', nullable: true, comment: 'Fecha de firma' })
-  signedAt?: Date = new Date();
+  signedAt?: Date;
 
   @ApiProperty({
     type: () => Boolean,

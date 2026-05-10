@@ -52,6 +52,7 @@ import LoggerService, { logger } from "@core/logs/logger";
 import { CatalogSyncLogModule } from "./modules/catalog-sync-log/modules/catalogsynclog.module";
 import { CatalogSyncLogCommandService } from "./modules/catalog-sync-log/services/catalogsynclogcommand.service";
 import { CatalogSyncLogQueryService } from "./modules/catalog-sync-log/services/catalogsynclogquery.service";
+import { ContractStatusModule } from "./modules/contract-status/modules/contractstatus.module";
 import { ContractStatusLogModule } from "./modules/contract-status-log/modules/contractstatuslog.module";
 import { ContractStatusLogCommandService } from "./modules/contract-status-log/services/contractstatuslogcommand.service";
 import { ContractStatusLogQueryService } from "./modules/contract-status-log/services/contractstatuslogquery.service";
@@ -59,6 +60,7 @@ import { ContractModule } from "./modules/contract/modules/contract.module";
 import { ContractCommandService } from "./modules/contract/services/contractcommand.service";
 import { ContractQueryService } from "./modules/contract/services/contractquery.service";
 import { CrmClientProfileModule } from "./modules/crm-client-profile/modules/crmclientprofile.module";
+import { CrmTacticalSummaryModule } from "./modules/crm-tactical-summary/crm-tactical-summary.module";
 import { CrmClientProfileCommandService } from "./modules/crm-client-profile/services/crmclientprofilecommand.service";
 import { CrmClientProfileQueryService } from "./modules/crm-client-profile/services/crmclientprofilequery.service";
 import { IncentiveModule } from "./modules/incentive/modules/incentive.module";
@@ -153,9 +155,11 @@ import { CrmClientProfileStatusModule } from "./modules/crm-client-profile-statu
     HorizontalModule,
     CrmModule,
     CatalogClientModule,
-        CatalogSyncLogModule,
+    CatalogSyncLogModule,
+    ContractStatusModule,
     ContractStatusLogModule,
     ContractModule,
+    CrmTacticalSummaryModule,
     CrmClientProfileModule,
     IncentiveModule,
     MilestoneStatusLogModule,

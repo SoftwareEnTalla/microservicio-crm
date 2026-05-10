@@ -100,6 +100,20 @@ export class ContractCommandService implements OnModuleInit {
     return inputData?.[field] ?? entityData?.[field] ?? currentData?.[field];
   }
 
+  private hasExpiredByEndDate(value: unknown): boolean {
+    if (value === undefined || value === null || value === '') {
+      return false;
+    }
+
+    const parsed = value instanceof Date ? new Date(value.getTime()) : new Date(String(value));
+    if (Number.isNaN(parsed.getTime())) {
+      return false;
+    }
+
+    parsed.setHours(23, 59, 59, 999);
+    return parsed.getTime() < Date.now();
+  }
+
   private async publishDslDomainEvents(events: BaseEvent[]): Promise<void> {
     for (const event of events) {
       await this.eventPublisher.publish(event as any);
@@ -107,6 +121,11 @@ export class ContractCommandService implements OnModuleInit {
         await this.eventStore.appendEvent('contract-' + event.aggregateId, event);
       }
     }
+  }
+
+  private shouldRunExpirationSweep(inputData: Record<string, any>): boolean {
+    const source = String(inputData?.operationSource ?? inputData?.source ?? inputData?.metadata?.source ?? '').toUpperCase();
+    return source === 'EXPIRATION_JOB' || source === 'EXPIRATION_SWEEP';
   }
 
   private async applyDslServiceRules(
@@ -148,12 +167,29 @@ export class ContractCommandService implements OnModuleInit {
       }
 
       // Regla de servicio: expired-contract-by-end-date
-      // Un contrato ACTIVE cuyo endDate ya pasó transita a EXPIRED (job diario)
-      if (this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE' && !(this.dslValue(entityData, currentData, inputData, 'endDate') === undefined || this.dslValue(entityData, currentData, inputData, 'endDate') === null || (typeof this.dslValue(entityData, currentData, inputData, 'endDate') === 'string' && String(this.dslValue(entityData, currentData, inputData, 'endDate')).trim() === '') || (Array.isArray(this.dslValue(entityData, currentData, inputData, 'endDate')) && this.dslValue(entityData, currentData, inputData, 'endDate').length === 0) || (typeof this.dslValue(entityData, currentData, inputData, 'endDate') === 'object' && !Array.isArray(this.dslValue(entityData, currentData, inputData, 'endDate')) && Object.prototype.toString.call(this.dslValue(entityData, currentData, inputData, 'endDate')) === '[object Object]' && Object.keys(Object(this.dslValue(entityData, currentData, inputData, 'endDate'))).length === 0))) {
+      // La expiracion automatica solo debe ejecutarse en el job diario dedicado,
+      // no durante updates interactivos del portal.
+      if (
+        this.shouldRunExpirationSweep(inputData) &&
+        this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE' &&
+        this.hasExpiredByEndDate(this.dslValue(entityData, currentData, inputData, 'endDate'))
+      ) {
         entityData['status'] = 'EXPIRED';
         if (entity) {
           (entity as any)['status'] = 'EXPIRED';
         }
+      }
+
+      if (
+        this.dslValue(entityData, currentData, inputData, 'status') === 'EXPIRED' &&
+        this.dslValue(entityData, currentData, inputData, 'status') !== this.dslValue(currentData, currentData, currentData, 'status')
+      ) {
+        pendingEvents.push(ContractExpiredEvent.create(
+          String(entityData['id'] ?? currentData['id'] ?? inputData?.id ?? 'contract-update'),
+          (entity ?? current ?? inputData ?? {}) as any,
+          String(entityData['createdBy'] ?? currentData['createdBy'] ?? inputData?.createdBy ?? 'system'),
+          String(entityData['id'] ?? currentData['id'] ?? inputData?.id ?? 'contract-update')
+        ));
       }
 
     }

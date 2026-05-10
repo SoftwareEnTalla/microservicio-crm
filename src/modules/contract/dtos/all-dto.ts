@@ -186,7 +186,7 @@ export class BaseContractDto {
   @IsDate()
   @IsOptional()
   @Field(() => Date, { description: 'Fecha de fin', nullable: true })
-  endDate?: Date = new Date();
+  endDate?: Date;
 
   @ApiProperty({
     type: () => Boolean,
@@ -226,7 +226,7 @@ export class BaseContractDto {
   @IsDate()
   @IsOptional()
   @Field(() => Date, { description: 'Fecha de firma', nullable: true })
-  signedAt?: Date = new Date();
+  signedAt?: Date;
 
   @ApiProperty({
     type: () => Boolean,
