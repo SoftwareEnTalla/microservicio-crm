@@ -8,6 +8,10 @@ type CrmMilestoneRow = {
   status: string | null;
   contractId: string | null;
   invoiceId: string | null;
+  paymentRuleType: string | null;
+  paymentRuleValue: number | null;
+  amount: number;
+  currency: string | null;
   actualPaymentDueDate: string | null;
   clientAcceptanceDate: string | null;
   invoicedAt: string | null;
@@ -17,10 +21,23 @@ type CrmMilestoneRow = {
 type CrmContractRow = {
   id: string;
   name: string;
+  contractNumber: string | null;
+  clientId: string | null;
   status: string | null;
+  termsId: string | null;
+  subscriptionPlanId: string | null;
+  policyVersion: string | null;
+  appliedIncentivesCount: number;
+  paymentTermsDays: number | null;
+  renewalPeriodDays: number | null;
+  currency: string | null;
+  autoRenew: boolean;
   startDate: string | null;
   endDate: string | null;
   providerId: string | null;
+  signedAt: string | null;
+  signedByClient: boolean;
+  totalValue: number;
   modificationDate: string | null;
 };
 
@@ -40,7 +57,23 @@ export class CrmTacticalSummaryService {
          COUNT(*)::int AS "totalContracts",
          COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) = 'ACTIVE')::int AS "activeContracts",
          COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) = 'EXPIRED')::int AS "expiredContracts",
-         COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) IN ('ACTIVE','SIGNED','APPROVED'))::int AS "commerciallyReadyContracts"
+         COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) IN ('ACTIVE','SIGNED','APPROVED'))::int AS "commerciallyReadyContracts",
+         COUNT(*) FILTER (WHERE COALESCE(NULLIF("clientId"::text, ''), '') <> '')::int AS "contractsWithClientBinding",
+         COUNT(*) FILTER (
+           WHERE COALESCE(NULLIF("termsId"::text, ''), '') <> ''
+             AND COALESCE(NULLIF("subscriptionPlanId"::text, ''), '') <> ''
+         )::int AS "contractsWithVersionedPolicy",
+         COUNT(*) FILTER (WHERE COALESCE("signedByClient", false) = true)::int AS "contractsSignedByClient",
+         COUNT(*) FILTER (
+           WHERE COALESCE(NULLIF("clientId"::text, ''), '') <> ''
+             AND COALESCE(NULLIF("termsId"::text, ''), '') <> ''
+             AND COALESCE(NULLIF("subscriptionPlanId"::text, ''), '') <> ''
+             AND COALESCE("signedByClient", false) = true
+         )::int AS "contractsReadyForLiquidation",
+         COUNT(*) FILTER (
+           WHERE COALESCE(NULLIF("termsId"::text, ''), '') = ''
+              OR COALESCE(NULLIF("subscriptionPlanId"::text, ''), '') = ''
+         )::int AS "contractsMissingCommercialPolicy"
        FROM contract_base_entity
        WHERE COALESCE("isActive", true) = true AND type = 'contract'`,
     );
@@ -50,6 +83,7 @@ export class CrmTacticalSummaryService {
          COUNT(*)::int AS "totalMilestones",
          COUNT(*) FILTER (WHERE COALESCE(NULLIF("invoiceId"::text, ''), '') <> '')::int AS "invoicedMilestones",
          COUNT(*) FILTER (WHERE COALESCE("clientAcceptanceDate", NULL) IS NOT NULL)::int AS "acceptedMilestones",
+         COUNT(*) FILTER (WHERE COALESCE(NULLIF("paymentRuleType", ''), '') <> '')::int AS "milestonesWithPaymentRule",
          COUNT(*) FILTER (WHERE COALESCE("actualPaymentDueDate", NULL) IS NOT NULL AND "actualPaymentDueDate" < CURRENT_DATE AND COALESCE(NULLIF("invoiceId"::text, ''), '') = '')::int AS "overdueMilestones",
          COUNT(*) FILTER (WHERE COALESCE("clientAcceptanceDate", NULL) IS NOT NULL AND COALESCE(NULLIF("invoiceId"::text, ''), '') = '')::int AS "readyForInvoiceMilestones"
        FROM payment_milestone_base_entity
@@ -67,7 +101,11 @@ export class CrmTacticalSummaryService {
     );
 
     const latestMilestones = await dataSource.query(
-      `SELECT id, name, status, "contractId", "invoiceId", "actualPaymentDueDate", "clientAcceptanceDate", "invoicedAt", "modificationDate"
+      `SELECT id, name, status, "contractId", "invoiceId", "paymentRuleType",
+              COALESCE("paymentRuleValue", 0)::int AS "paymentRuleValue",
+              COALESCE(amount, 0)::float AS amount,
+              currency,
+              "actualPaymentDueDate", "clientAcceptanceDate", "invoicedAt", "modificationDate"
        FROM payment_milestone_base_entity
        WHERE COALESCE("isActive", true) = true AND type = 'paymentmilestone'
        ORDER BY COALESCE("modificationDate", "creationDate") DESC
@@ -76,7 +114,17 @@ export class CrmTacticalSummaryService {
     );
 
     const latestContracts = await dataSource.query(
-      `SELECT id, name, status, "startDate", "endDate", "providerId", "modificationDate"
+            `SELECT id, name, "contractNumber", "clientId", status, "termsId", "subscriptionPlanId",
+              COALESCE(NULLIF(metadata::jsonb ->> 'policyVersion', ''), CONCAT('contract-', COALESCE("contractNumber", id::text), '@', TO_CHAR(COALESCE("modificationDate", "creationDate"), 'YYYYMMDDHH24MISS'))) AS "policyVersion",
+              COALESCE((SELECT COUNT(*)::int FROM jsonb_object_keys(COALESCE("appliedIncentives"::jsonb, '{}'::jsonb)) AS incentive_key), 0)::int AS "appliedIncentivesCount",
+              COALESCE("paymentTermsDays", 0)::int AS "paymentTermsDays",
+              COALESCE("renewalPeriodDays", 0)::int AS "renewalPeriodDays",
+              currency,
+              COALESCE("autoRenew", false) AS "autoRenew",
+              "startDate", "endDate", "providerId", "signedAt",
+              COALESCE("signedByClient", false) AS "signedByClient",
+              COALESCE("totalValue", 0)::float AS "totalValue",
+              "modificationDate"
        FROM contract_base_entity
        WHERE COALESCE("isActive", true) = true AND type = 'contract'
        ORDER BY COALESCE("modificationDate", "creationDate") DESC
@@ -101,8 +149,14 @@ export class CrmTacticalSummaryService {
           activeContracts: Number(contractTotals?.activeContracts ?? 0),
           expiredContracts: Number(contractTotals?.expiredContracts ?? 0),
           commerciallyReadyContracts: Number(contractTotals?.commerciallyReadyContracts ?? 0),
+          contractsWithClientBinding: Number(contractTotals?.contractsWithClientBinding ?? 0),
+          contractsWithVersionedPolicy: Number(contractTotals?.contractsWithVersionedPolicy ?? 0),
+          contractsSignedByClient: Number(contractTotals?.contractsSignedByClient ?? 0),
+          contractsReadyForLiquidation: Number(contractTotals?.contractsReadyForLiquidation ?? 0),
+          contractsMissingCommercialPolicy: Number(contractTotals?.contractsMissingCommercialPolicy ?? 0),
           totalMilestones: Number(milestoneTotals?.totalMilestones ?? 0),
           acceptedMilestones: Number(milestoneTotals?.acceptedMilestones ?? 0),
+          milestonesWithPaymentRule: Number(milestoneTotals?.milestonesWithPaymentRule ?? 0),
           overdueMilestones: Number(milestoneTotals?.overdueMilestones ?? 0),
           readyForInvoiceMilestones: Number(milestoneTotals?.readyForInvoiceMilestones ?? 0),
           invoicedMilestones: Number(milestoneTotals?.invoicedMilestones ?? 0),
@@ -137,8 +191,14 @@ export class CrmTacticalSummaryService {
           activeContracts: 0,
           expiredContracts: 0,
           commerciallyReadyContracts: 0,
+          contractsWithClientBinding: 0,
+          contractsWithVersionedPolicy: 0,
+          contractsSignedByClient: 0,
+          contractsReadyForLiquidation: 0,
+          contractsMissingCommercialPolicy: 0,
           totalMilestones: 0,
           acceptedMilestones: 0,
+          milestonesWithPaymentRule: 0,
           overdueMilestones: 0,
           readyForInvoiceMilestones: 0,
           invoicedMilestones: 0,
