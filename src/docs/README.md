@@ -30,6 +30,8 @@ El microservicio **crm** concentra la gestión comercial: proveedores (providers
 incentivos (comisiones, bonos, penalizaciones) y hitos de pago asociados al ciclo de vida del
 contrato. Aplica el patrón **Upstream-Mirror / Person-Role** (DSL v2.1) sobre `Provider`
 (downstream mirror de `hrms.person`) y proyecta el perfil comercial del cliente (`crm-client-profile`).
+Desde la iteración 2026-05-31 también incorpora el núcleo CRM clásico con `lead`, `account`,
+`contact`, `opportunity`, `activity` y `quote`.
 
 ### Historias de Usuario Implementadas
 
@@ -68,6 +70,12 @@ esté indisponible.
 | `models/crm/incentive.xml` | 1.0.0 | Incentivo |
 | `models/crm/payment-milestone.xml` | 1.0.0 | Hito de pago |
 | `models/crm/crm-client-profile.xml` | 1.0.0 | Proyección comercial del cliente |
+| `models/crm/lead.xml` | 1.0.0 | Lead comercial y calificación inicial |
+| `models/crm/account.xml` | 1.0.0 | Cuenta comercial |
+| `models/crm/contact.xml` | 1.0.0 | Contacto comercial |
+| `models/crm/opportunity.xml` | 1.0.0 | Oportunidad y forecast |
+| `models/crm/activity.xml` | 1.0.0 | Actividad comercial |
+| `models/crm/quote.xml` | 1.0.0 | Cotización comercial |
 
 ### `<upstream-mirror>` en `provider.xml`
 
@@ -139,6 +147,24 @@ Artefactos auto-generados por el codegen para el patrón Upstream-Mirror (v2.1) 
 ### 4.10. Crm (aggregate root operativo)
 - Representa la raíz del bounded context CRM para operaciones agregadas.
 
+### 4.11. Lead
+- Captura, asignación, calificación y conversión de prospectos.
+
+### 4.12. Account
+- Cuenta comercial asociada al pipeline y a la relación contractual.
+
+### 4.13. Contact
+- Interlocutores comerciales vinculados a cuenta, owner y oportunidad.
+
+### 4.14. Opportunity
+- Pipeline comercial, etapas, probabilidad y cierre WON/LOST.
+
+### 4.15. Activity
+- Llamadas, tareas, reuniones y seguimiento operativo del pipeline.
+
+### 4.16. Quote
+- Propuestas económicas vinculadas a oportunidades y su transición a ERP.
+
 ---
 
 ## 5. Eventos Publicados
@@ -158,6 +184,12 @@ su topic Kafka correspondiente (`<kebab-name>-created|updated|deleted`).
 | catalog-sync-log | `CatalogSyncLog` | `catalog-sync-log-*` |
 | catalog-client | `CatalogClient` | `catalog-client-*` |
 | crm | `Crm` | `crm-created`, `crm-updated`, `crm-deleted` |
+| lead | `Lead` | `lead-created`, `lead-updated`, `lead-deleted` |
+| account | `Account` | `account-created`, `account-updated`, `account-deleted` |
+| contact | `Contact` | `contact-created`, `contact-updated`, `contact-deleted` |
+| opportunity | `Opportunity` | `opportunity-created`, `opportunity-updated`, `opportunity-deleted` |
+| activity | `Activity` | `activity-created`, `activity-updated`, `activity-deleted` |
+| quote | `Quote` | `quote-created`, `quote-updated`, `quote-deleted` |
 
 Comando Kafka del patrón Upstream-Mirror:
 
@@ -193,6 +225,12 @@ secciones 7.1–7.2.
 | payment-milestone | `/api/paymentmilestones/command` | `/api/paymentmilestones/query` |
 | crm-client-profile | `/api/crmclientprofiles/command` | `/api/crmclientprofiles/query` |
 | crm | `/api/crms/command` | `/api/crms/query` |
+| lead | `/api/leads/command` | `/api/leads/query` |
+| account | `/api/accounts/command` | `/api/accounts/query` |
+| contact | `/api/contacts/command` | `/api/contacts/query` |
+| opportunity | `/api/opportunitys/command` | `/api/opportunitys/query` |
+| activity | `/api/activitys/command` | `/api/activitys/query` |
+| quote | `/api/quotes/command` | `/api/quotes/query` |
 | ... | ... | ... |
 
 ### 7.3. Endpoint especial Upstream-Mirror

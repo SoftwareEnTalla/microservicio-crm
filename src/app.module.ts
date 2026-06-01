@@ -52,6 +52,15 @@ import LoggerService, { logger } from "@core/logs/logger";
 import { CatalogSyncLogModule } from "./modules/catalog-sync-log/modules/catalogsynclog.module";
 import { CatalogSyncLogCommandService } from "./modules/catalog-sync-log/services/catalogsynclogcommand.service";
 import { CatalogSyncLogQueryService } from "./modules/catalog-sync-log/services/catalogsynclogquery.service";
+import { ActivityModule } from "./modules/activity/modules/activity.module";
+import { ActivityCommandService } from "./modules/activity/services/activitycommand.service";
+import { ActivityQueryService } from "./modules/activity/services/activityquery.service";
+import { AccountModule } from "./modules/account/modules/account.module";
+import { AccountCommandService } from "./modules/account/services/accountcommand.service";
+import { AccountQueryService } from "./modules/account/services/accountquery.service";
+import { ContactModule } from "./modules/contact/modules/contact.module";
+import { ContactCommandService } from "./modules/contact/services/contactcommand.service";
+import { ContactQueryService } from "./modules/contact/services/contactquery.service";
 import { ContractStatusModule } from "./modules/contract-status/modules/contractstatus.module";
 import { ContractStatusLogModule } from "./modules/contract-status-log/modules/contractstatuslog.module";
 import { ContractStatusLogCommandService } from "./modules/contract-status-log/services/contractstatuslogcommand.service";
@@ -66,15 +75,24 @@ import { CrmClientProfileQueryService } from "./modules/crm-client-profile/servi
 import { IncentiveModule } from "./modules/incentive/modules/incentive.module";
 import { IncentiveCommandService } from "./modules/incentive/services/incentivecommand.service";
 import { IncentiveQueryService } from "./modules/incentive/services/incentivequery.service";
+import { LeadModule } from "./modules/lead/modules/lead.module";
+import { LeadCommandService } from "./modules/lead/services/leadcommand.service";
+import { LeadQueryService } from "./modules/lead/services/leadquery.service";
 import { MilestoneStatusLogModule } from "./modules/milestone-status-log/modules/milestonestatuslog.module";
 import { MilestoneStatusLogCommandService } from "./modules/milestone-status-log/services/milestonestatuslogcommand.service";
 import { MilestoneStatusLogQueryService } from "./modules/milestone-status-log/services/milestonestatuslogquery.service";
+import { OpportunityModule } from "./modules/opportunity/modules/opportunity.module";
+import { OpportunityCommandService } from "./modules/opportunity/services/opportunitycommand.service";
+import { OpportunityQueryService } from "./modules/opportunity/services/opportunityquery.service";
 import { PaymentMilestoneModule } from "./modules/payment-milestone/modules/paymentmilestone.module";
 import { PaymentMilestoneCommandService } from "./modules/payment-milestone/services/paymentmilestonecommand.service";
 import { PaymentMilestoneQueryService } from "./modules/payment-milestone/services/paymentmilestonequery.service";
 import { ProviderModule } from "./modules/provider/modules/provider.module";
 import { ProviderCommandService } from "./modules/provider/services/providercommand.service";
 import { ProviderQueryService } from "./modules/provider/services/providerquery.service";
+import { QuoteModule } from "./modules/quote/modules/quote.module";
+import { QuoteCommandService } from "./modules/quote/services/quotecommand.service";
+import { QuoteQueryService } from "./modules/quote/services/quotequery.service";
 import { SubscriptionPlanModule } from "./modules/subscription-plan/modules/subscriptionplan.module";
 import { SubscriptionPlanCommandService } from "./modules/subscription-plan/services/subscriptionplancommand.service";
 import { SubscriptionPlanQueryService } from "./modules/subscription-plan/services/subscriptionplanquery.service";
@@ -153,6 +171,9 @@ import { CrmClientProfileStatusModule } from "./modules/crm-client-profile-statu
      */
     CqrsModule,
     HorizontalModule,
+    AccountModule,
+    ActivityModule,
+    ContactModule,
     CrmModule,
     CatalogClientModule,
     CatalogSyncLogModule,
@@ -162,9 +183,12 @@ import { CrmClientProfileStatusModule } from "./modules/crm-client-profile-statu
     CrmTacticalSummaryModule,
     CrmClientProfileModule,
     IncentiveModule,
+    LeadModule,
     MilestoneStatusLogModule,
+    OpportunityModule,
     PaymentMilestoneModule,
     ProviderModule,
+    QuoteModule,
     SubscriptionPlanModule,
     TermsAndConditionModule,    
     /**
@@ -260,8 +284,14 @@ export class CrmAppModule implements OnModuleInit {
     ServiceRegistry.getInstance().registryAll([
       CrmCommandService,
       CrmQueryService,
+      AccountCommandService,
+      AccountQueryService,
+      ActivityCommandService,
+      ActivityQueryService,
       CatalogSyncLogCommandService,
       CatalogSyncLogQueryService,
+      ContactCommandService,
+      ContactQueryService,
       ContractStatusLogCommandService,
       ContractStatusLogQueryService,
       ContractCommandService,
@@ -270,12 +300,18 @@ export class CrmAppModule implements OnModuleInit {
       CrmClientProfileQueryService,
       IncentiveCommandService,
       IncentiveQueryService,
+      LeadCommandService,
+      LeadQueryService,
       MilestoneStatusLogCommandService,
       MilestoneStatusLogQueryService,
+      OpportunityCommandService,
+      OpportunityQueryService,
       PaymentMilestoneCommandService,
       PaymentMilestoneQueryService,
       ProviderCommandService,
       ProviderQueryService,
+      QuoteCommandService,
+      QuoteQueryService,
       SubscriptionPlanCommandService,
       SubscriptionPlanQueryService,
       TermsAndConditionCommandService,
